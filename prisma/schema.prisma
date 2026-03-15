@@ -20,6 +20,16 @@ model Admin {
   createdAt DateTime @default(now())
 }
 
+
+
+model Client {
+  email     String   @unique
+  password  String
+  name      String
+  createdAt DateTime @default(now())
+}
+
+
 model Quote {
   id        Int      @id @default(autoincrement())
   name      String
