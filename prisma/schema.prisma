@@ -13,3 +13,48 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+model Admin {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+}
+
+model Quote {
+  id        Int      @id @default(autoincrement())
+  name      String
+  surname   String
+  title     String
+  plan      String
+  cellphone String
+  email     String
+  message   String
+  createdAt DateTime @default(now())
+}
+
+model Member {
+  id            Int           @id @default(autoincrement())
+  name          String
+  policyNumber  String        @unique
+  beneficiaries Beneficiary[]
+  claims        Claim[]
+}
+
+model Beneficiary {
+  id        Int      @id @default(autoincrement())
+  name      String
+  relation  String
+  memberId  Int
+  member    Member   @relation(fields: [memberId], references: [id])
+}
+
+model Claim {
+  id          Int      @id @default(autoincrement())
+  memberId    Int
+  member      Member   @relation(fields: [memberId], references: [id])
+  description String
+  status      String   @default("Pending") // Pending, Approved, Rejected
+  createdAt   DateTime @default(now())
+}
+
+
