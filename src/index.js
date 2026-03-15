@@ -12,6 +12,6 @@ app.use(express.json());
 app.use("/auth", authRoutes);
 app.use("/quotes", quoteRoutes);
 app.use("/members", memberRoutes);
-app.use("/claims", claims);
+app.use("/claims", claimsRoutes);
 
 app.listen(4000, () => console.log("Backend running on port 4000"));
