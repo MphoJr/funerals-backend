@@ -15,3 +15,8 @@ app.use("/members", memberRoutes);
 app.use("/claims", claimsRoutes);
 
 app.listen(4000, () => console.log("Backend running on port 4000"));
+
+process.on("SIGINT", async () => {
+  await prisma.$disconnect();
+  process.exit(0);
+});
