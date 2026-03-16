@@ -1,5 +1,7 @@
 import jwt from "jsonwebtoken";
 
+const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
 export function verifyToken(role) {
   return (req, res, next) => {
     const authHeader = req.headers.authorization;

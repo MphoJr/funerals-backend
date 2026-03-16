@@ -5,6 +5,11 @@ import { prisma } from "../prisma/client.js";
 
 const router = express.Router();
 
+const token = jwt.sign(
+  { id: admin.id, role: "admin" },
+  process.env.JWT_SECRET,
+  { expiresIn: "1d" },
+);
 // Admin login
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
