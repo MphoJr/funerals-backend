@@ -1,21 +1,24 @@
 import express from "express";
 import { Claim } from "../models/Claim.js";
+import { Client } from "../models/Client.js";
+import { authenticate } from "../middleware/authMiddleware.js"; // Admin
+import { authenticateClient } from "../middleware/clientMiddleware.js"; // Client
 
 const router = express.Router();
 
-// Create claim
-router.post("/", async (req, res) => {
+// Client: submit claim (must be logged in)
+router.post("/", authenticateClient, async (req, res) => {
   try {
-    const claim = await Claim.create(req.body);
+    const claim = await Claim.create({ ...req.body, clientId: req.clientId });
     res.json(claim);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-// Get all claims
-router.get("/", async (req, res) => {
-  const claims = await Claim.findAll({ include: ["Client"] });
+// Admin: view all claims
+router.get("/", authenticate, async (req, res) => {
+  const claims = await Claim.findAll({ include: [Client] });
   res.json(claims);
 });
 
