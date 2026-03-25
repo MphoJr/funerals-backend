@@ -1,7 +1,9 @@
 import express from "express";
-import { prisma } from "../prismaClient.js";
-import { verifyToken } from "../middleware/auth.js";
 
+import { verifyToken } from "../middleware/auth.js";
+import { PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
 const router = express.Router();
 
 // Add member
