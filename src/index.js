@@ -1,22 +1,29 @@
 import express from "express";
+import cors from "cors";
 import dotenv from "dotenv";
+import { sequelize } from "./db.js";
 import authRoutes from "./auth/auth.js";
-import quoteRoutes from "./quotes/quotes.js";
-import memberRoutes from "./members/members.js";
-import claims from "./claims/claims.js";
+import { sequelize } from "./db.js";
+import "./models/Admin.js";
+import "./models/Client.js";
+import "./models/Quote.js";
+import "./models/Claim.js";
+import "./models/Contact.js";
 
+sequelize.sync({ alter: true }).then(() => {
+  console.log("Database synced successfully");
+});
 dotenv.config();
 const app = express();
+
+app.use(cors());
 app.use(express.json());
-
 app.use("/auth", authRoutes);
-app.use("/quotes", quoteRoutes);
-app.use("/members", memberRoutes);
-app.use("/claims", claimsRoutes);
 
-app.listen(4000, () => console.log("Backend running on port 4000"));
+const PORT = process.env.PORT || 4000;
 
-process.on("SIGINT", async () => {
-  await prisma.$disconnect();
-  process.exit(0);
+sequelize.sync().then(() => {
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
 });
