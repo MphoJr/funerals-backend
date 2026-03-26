@@ -6,6 +6,7 @@ export const Quote = sequelize.define("Quote", {
   id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
   description: { type: DataTypes.TEXT, allowNull: false },
   amount: { type: DataTypes.FLOAT, allowNull: false },
+  status: { type: DataTypes.STRING, defaultValue: "pending" },
 });
 
 // Associations
