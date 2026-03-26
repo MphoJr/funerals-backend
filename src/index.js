@@ -1,9 +1,9 @@
+import dotenv from "dotenv";
+dotenv.config();
 import express from "express";
 import cors from "cors";
-import dotenv from "dotenv";
 import { sequelize } from "./db.js";
 import "./models/Quote.js";
-
 import authRoutes from "./routes/auth.js";
 import clientRoutes from "./routes/clients.js";
 import quoteRoutes from "./routes/quote.js";
@@ -11,7 +11,6 @@ import claimRoutes from "./routes/claims.js";
 import contactRoutes from "./routes/contacts.js";
 import clientAuthRoutes from "./routes/clientAuth.js";
 
-dotenv.config();
 const app = express();
 
 app.use(cors());
