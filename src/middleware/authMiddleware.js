@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 
-// Middleware for Client authentication
-export const authenticateClient = (req, res, next) => {
+// Middleware for Admin authentication
+export const authenticate = (req, res, next) => {
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -12,7 +12,7 @@ export const authenticateClient = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.clientId = decoded.id; // attach client ID to request
+    req.adminId = decoded.id; // attach admin ID to request
     next();
   } catch (err) {
     return res.status(401).json({ error: "Invalid token" });
