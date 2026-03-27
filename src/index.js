@@ -31,6 +31,20 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+(async () => {
+  try {
+    await sequelize.authenticate();
+    console.log("✅ Database connected");
+
+    // Sync models (optional: use { force: true } or { alter: true } in dev)
+    await sequelize.sync();
+    console.log("✅ Models synced");
+  } catch (err) {
+    console.error("❌ DB connection failed:", err);
+    process.exit(1); // exit if DB fails
+  }
+})();
+
 // Routes
 app.use("/auth", authRoutes);
 app.use("/clients", clientRoutes);
