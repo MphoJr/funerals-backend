@@ -1,14 +1,35 @@
 import { DataTypes } from "sequelize";
 import { sequelize } from "../db.js";
-import { Client } from "./Client.js";
 
-export const Quote = sequelize.define("Quote", {
-  id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
-  description: { type: DataTypes.TEXT, allowNull: false },
-  amount: { type: DataTypes.FLOAT, allowNull: false },
-  status: { type: DataTypes.STRING, defaultValue: "pending" },
+const Quote = sequelize.define("Quote", {
+  title: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  name: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  surname: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  plan: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  cell: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  email: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  message: {
+    type: DataTypes.TEXT,
+    allowNull: false,
+  },
 });
 
-// Associations
-Client.hasMany(Quote, { foreignKey: "clientId" });
-Quote.belongsTo(Client, { foreignKey: "clientId" });
+export default Quote;

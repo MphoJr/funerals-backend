@@ -1,5 +1,5 @@
 import express from "express";
-import { Quote } from "../models/Quote.js";
+import Quote from "../models/Quote.js";
 import { Client } from "../models/Client.js";
 import { authenticate } from "../middleware/authMiddleware.js"; // Admin
 import { authenticateClient } from "../middleware/clientMiddleware.js"; // Client
@@ -7,12 +7,18 @@ import { authenticateClient } from "../middleware/clientMiddleware.js"; // Clien
 const router = express.Router();
 
 // Public: anyone can create a quote
+
 router.post("/", async (req, res) => {
   try {
-    const quote = await Quote.create(req.body);
-    res.json(quote);
+    console.log("Incoming quote:", req.body);
+    const { title, name, surname, plan, cell, email, message } = req.body;
+
+    await Quote.create({ title, name, surname, plan, cell, email, message });
+
+    res.json({ success: true, msg: "Quote saved successfully" });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error("❌ Error saving quote:", err);
+    res.status(500).json({ error: "Server error" });
   }
 });
 

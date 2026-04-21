@@ -36,40 +36,38 @@ app.use(express.json());
     await sequelize.authenticate();
     console.log("✅ Database connected");
 
-    // Sync models (optional: use { force: true } or { alter: true } in dev)
+    // Force sync: drops and recreates tables
+    //await sequelize.sync({ force: true });
+    //console.log("✅ Models synced (tables recreated)");
     await sequelize.sync();
     console.log("✅ Models synced");
+
+    app.use("/quote", quoteRoutes);
+
+    const PORT = process.env.PORT || 4000;
+    app.listen(PORT, () => {
+      console.log(`🚀 Server running on port ${PORT}`);
+    });
   } catch (err) {
-    console.error("❌ DB connection failed:", err);
-    process.exit(1); // exit if DB fails
+    console.error("❌ Failed to start server:", err);
   }
 })();
 
 // Routes
 app.use("/auth", authRoutes);
 app.use("/clients", clientRoutes);
-app.use("/quotes", quoteRoutes);
+app.use("/quote", quoteRoutes);
 app.use("/claims", claimRoutes);
 app.use("/contacts", contactRoutes);
 app.use("/client-auth", clientAuthRoutes);
 
-// Port
+app.post("/auth/client/login", (req, res) => {
+  res.json({ success: true, message: "Client login endpoint working" });
+});
+
+app.post("/auth/admin/login", (req, res) => {
+  res.json({ success: true, message: "Admin login endpoint working" });
+});
+
 const PORT = process.env.PORT || 4000;
-
-// DB connection + server start
-const startServer = async () => {
-  try {
-    await sequelize.authenticate();
-    console.log("✅ Database connected");
-
-    await sequelize.sync();
-
-    app.listen(PORT, () => {
-      console.log(`🚀 Server running on port ${PORT}`);
-    });
-  } catch (error) {
-    console.error("❌ Failed to start server:", error);
-  }
-};
-
-startServer();
+app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
