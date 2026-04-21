@@ -1,6 +1,6 @@
 import express from "express";
 import { Claim } from "../models/Claims.js";
-import { Client } from "../models/Client.js";
+import Client from "../models/Client.js";
 import { authenticate } from "../middleware/authMiddleware.js"; // Admin
 import { authenticateClient } from "../middleware/clientMiddleware.js"; // Client
 

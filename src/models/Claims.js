@@ -1,6 +1,6 @@
 import { DataTypes } from "sequelize";
 import { sequelize } from "../db.js";
-import { Client } from "./Client.js";
+import Client from "./Client.js";
 
 export const Claim = sequelize.define("Claim", {
   id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },

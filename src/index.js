@@ -18,12 +18,13 @@ import cors from "cors";
 import "./models/Quote.js";
 
 // Routes
-import authRoutes from "./routes/auth.js";
+
 import clientRoutes from "./routes/clients.js";
 import quoteRoutes from "./routes/quote.js";
 import claimRoutes from "./routes/claims.js";
 import contactRoutes from "./routes/contacts.js";
 import clientAuthRoutes from "./routes/clientAuth.js";
+import adminAuthRoutes from "./routes/adminAuth.js";
 
 const app = express();
 
@@ -54,20 +55,12 @@ app.use(express.json());
 })();
 
 // Routes
-app.use("/auth", authRoutes);
 app.use("/clients", clientRoutes);
 app.use("/quote", quoteRoutes);
 app.use("/claims", claimRoutes);
 app.use("/contacts", contactRoutes);
-app.use("/client-auth", clientAuthRoutes);
-
-app.post("/auth/client/login", (req, res) => {
-  res.json({ success: true, message: "Client login endpoint working" });
-});
-
-app.post("/auth/admin/login", (req, res) => {
-  res.json({ success: true, message: "Admin login endpoint working" });
-});
+app.use("/client/auth", clientAuthRoutes);
+app.use("/admin/auth", adminAuthRoutes);
 
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));

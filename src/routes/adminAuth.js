@@ -1,40 +1,38 @@
 import express from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import Client from "../models/Client.js";
-import { verifyAdmin } from "../middleware/authMiddleware.js";
+import Admin from "../models/Admin.js";
 
 const router = express.Router();
 
-// Admin registers client (protected)
-router.post("/register", verifyAdmin, async (req, res) => {
+// Register admin
+router.post("/register", async (req, res) => {
   try {
-    const { name, surname, email, password } = req.body;
+    const { username, email, password } = req.body;
     const hashedPassword = await bcrypt.hash(password, 10);
-    const client = await Client.create({
-      name,
-      surname,
+    const admin = await Admin.create({
+      username,
       email,
       password: hashedPassword,
     });
-    res.json({ success: true, client });
+    res.json({ success: true, admin });
   } catch (err) {
     res.status(500).json({ error: "Server error" });
   }
 });
 
-// Client login
+// Login admin
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
-    const client = await Client.findOne({ where: { email } });
-    if (!client) return res.status(401).json({ error: "Invalid credentials" });
+    const admin = await Admin.findOne({ where: { email } });
+    if (!admin) return res.status(401).json({ error: "Invalid credentials" });
 
-    const match = await bcrypt.compare(password, client.password);
+    const match = await bcrypt.compare(password, admin.password);
     if (!match) return res.status(401).json({ error: "Invalid credentials" });
 
     const token = jwt.sign(
-      { id: client.id, role: "client" },
+      { id: admin.id, role: "admin" },
       process.env.JWT_SECRET,
       { expiresIn: "1h" },
     );
