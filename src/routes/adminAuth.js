@@ -6,6 +6,7 @@ import Admin from "../models/Admin.js";
 const router = express.Router();
 
 // Register admin
+// Register admin
 router.post("/register", async (req, res) => {
   try {
     const { username, email, password } = req.body;
@@ -17,10 +18,12 @@ router.post("/register", async (req, res) => {
     });
     res.json({ success: true, admin });
   } catch (err) {
+    console.error("Admin register error:", err);
     res.status(500).json({ error: "Server error" });
   }
 });
 
+// Login admin
 // Login admin
 router.post("/login", async (req, res) => {
   try {
@@ -38,6 +41,8 @@ router.post("/login", async (req, res) => {
     );
     res.json({ success: true, token });
   } catch (err) {
+    // 👇 Add this line
+    console.error("Admin login error:", err);
     res.status(500).json({ error: "Server error" });
   }
 });

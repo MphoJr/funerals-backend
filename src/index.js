@@ -31,13 +31,22 @@ const app = express();
 // Middleware
 app.use(cors());
 app.use(express.json());
+// Routes
+app.use("/clients", clientRoutes);
+app.use("/quote", quoteRoutes);
+app.use("/claims", claimRoutes);
+app.use("/contacts", contactRoutes);
+app.use("/auth/client", clientAuthRoutes);
+app.use("/auth/admin", adminAuthRoutes);
+const PORT = process.env.PORT || 4000;
+app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
 
 (async () => {
   try {
     await sequelize.authenticate();
     console.log("✅ Database connected");
 
-    // Force sync: drops and recreates tables
+    //Force sync: drops and recreates tables
     //await sequelize.sync({ force: true });
     //console.log("✅ Models synced (tables recreated)");
     await sequelize.sync();
@@ -55,12 +64,3 @@ app.use(express.json());
 })();
 
 // Routes
-app.use("/clients", clientRoutes);
-app.use("/quote", quoteRoutes);
-app.use("/claims", claimRoutes);
-app.use("/contacts", contactRoutes);
-app.use("/client/auth", clientAuthRoutes);
-app.use("/admin/auth", adminAuthRoutes);
-
-const PORT = process.env.PORT || 4000;
-app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
