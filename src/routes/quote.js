@@ -23,12 +23,13 @@ router.post("/", async (req, res) => {
 });
 
 // Protected: only Admins can view all quotes
-router.get("/", authenticate, async (req, res) => {
+router.get("/quote", authenticate, async (req, res) => {
   try {
-    const quotes = await Quote.findAll({ include: [Client] });
+    const quotes = await Quote.findAll();
     res.json(quotes);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error("Error fetching quotes:", err);
+    res.status(500).json({ error: "Server error" });
   }
 });
 

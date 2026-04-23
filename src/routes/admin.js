@@ -17,8 +17,13 @@ function adminOnly(req, res, next) {
 
 // Quotes
 router.get("/quote", authMiddleware, adminOnly, async (req, res) => {
-  const quotes = await Quote.findAll();
-  res.json(quotes);
+  try {
+    const quote = await Quote.findAll();
+    res.json(quote);
+  } catch (err) {
+    console.error("Error fetching quotes:", err);
+    res.status(500).json({ error: "Server error" });
+  }
 });
 
 // Claims
@@ -29,7 +34,7 @@ router.get("/claims", authMiddleware, adminOnly, async (req, res) => {
 
 // Contact messages
 router.get("/contact", authMiddleware, adminOnly, async (req, res) => {
-  const messages = await ContactMessage.findAll();
+  const messages = await Contact.findAll();
   res.json(messages);
 });
 
