@@ -25,6 +25,7 @@ import claimRoutes from "./routes/claims.js";
 import contactRoutes from "./routes/contacts.js";
 import clientAuthRoutes from "./routes/clientAuth.js";
 import adminAuthRoutes from "./routes/adminAuth.js";
+import adminRoutes from "./routes/admin.js";
 
 const app = express();
 
@@ -38,6 +39,7 @@ app.use("/claims", claimRoutes);
 app.use("/contacts", contactRoutes);
 app.use("/auth/client", clientAuthRoutes);
 app.use("/auth/admin", adminAuthRoutes);
+app.use("/", adminRoutes); // so /quotes, /claims, /contact, /clients work
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
 
