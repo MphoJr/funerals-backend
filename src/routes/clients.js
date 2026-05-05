@@ -1,3 +1,4 @@
+// routes/client.js
 import express from "express";
 import authMiddleware from "../middleware/authMiddleware.js";
 import { Claims } from "../models/Claims.js";
@@ -6,83 +7,133 @@ import Client from "../models/Client.js";
 
 const router = express.Router();
 
-// Get client claims
+/* -------------------- CLAIMS -------------------- */
+
+// Get all claims for logged-in client
 router.get("/claims", authMiddleware, async (req, res) => {
-  const claims = await Claims.findAll({ where: { clientId: req.user.id } });
-  res.json(claims);
+  try {
+    const claims = await Claims.findAll({ where: { clientId: req.user.id } });
+    res.json(claims);
+  } catch (err) {
+    console.error("Error fetching claims:", err);
+    res.status(500).json({ error: "Server error" });
+  }
 });
 
 // Add new claim
 router.post("/claims", authMiddleware, async (req, res) => {
-  const claim = await Claims.create({
-    description: req.body.description,
-    clientId: req.user.id,
-    status: "Pending",
-  });
-  res.json(claim);
+  try {
+    const claim = await Claims.create({
+      description: req.body.description,
+      status: "Pending",
+      clientId: req.user.id,
+    });
+    res.json(claim);
+  } catch (err) {
+    console.error("Error creating claim:", err);
+    res.status(500).json({ error: "Server error" });
+  }
 });
 
-// Get members
+/* -------------------- BENEFICIARIES -------------------- */
+
+// Get all beneficiaries for logged-in client
 router.get("/members", authMiddleware, async (req, res) => {
-  const members = await Members.findAll({
-    where: { clientId: req.user.id },
-  });
-  res.json(members);
+  try {
+    const beneficiaries = await Members.findAll({
+      where: { clientId: req.user.id },
+    });
+    res.json(beneficiaries);
+  } catch (err) {
+    console.error("Error fetching beneficiaries:", err);
+    res.status(500).json({ error: "Server error" });
+  }
 });
 
-// Add member (limit 13)
+// Add beneficiary (limit 13 per client)
 router.post("/members", authMiddleware, async (req, res) => {
-  const count = await Members.count({ where: { clientId: req.user.id } });
-  if (count >= 13)
-    return res.status(400).json({ error: "Max 13 members allowed" });
+  try {
+    const count = await Members.count({ where: { clientId: req.user.id } });
+    if (count >= 13) {
+      return res.status(400).json({ error: "Max 13 beneficiaries allowed" });
+    }
 
-  const member = await Members.create({
-    name: req.body.name,
-    relation: req.body.relation,
-    clientId: req.user.id,
-  });
-  res.json(member);
+    const beneficiary = await Members.create({
+      name: req.body.name,
+      relation: req.body.relation,
+      clientId: req.user.id,
+    });
+    res.json(beneficiary);
+  } catch (err) {
+    console.error("Error creating beneficiary:", err);
+    res.status(500).json({ error: "Server error" });
+  }
 });
 
-// Edit member
+// Update beneficiary
 router.put("/members/:id", authMiddleware, async (req, res) => {
-  const member = await Members.findOne({
-    where: { id: req.params.id, clientId: req.user.id },
-  });
-  if (!member) return res.status(404).json({ error: "Not found" });
+  try {
+    const beneficiary = await Members.findOne({
+      where: { id: req.params.id, clientId: req.user.id },
+    });
+    if (!beneficiary) return res.status(404).json({ error: "Not found" });
 
-  member.name = req.body.name || member.name;
-  member.relation = req.body.relation || member.relation;
-  await member.save();
-  res.json(member);
+    beneficiary.name = req.body.name || beneficiary.name;
+    beneficiary.relation = req.body.relation || beneficiary.relation;
+    await beneficiary.save();
+
+    res.json(beneficiary);
+  } catch (err) {
+    console.error("Error updating beneficiary:", err);
+    res.status(500).json({ error: "Server error" });
+  }
 });
 
-// Delete member
+// Delete beneficiary
 router.delete("/members/:id", authMiddleware, async (req, res) => {
-  const member = await Members.findOne({
-    where: { id: req.params.id, clientId: req.user.id },
-  });
-  if (!member) return res.status(404).json({ error: "Not found" });
+  try {
+    const beneficiary = await Members.findOne({
+      where: { id: req.params.id, clientId: req.user.id },
+    });
+    if (!beneficiary) return res.status(404).json({ error: "Not found" });
 
-  await member.destroy();
-  res.json({ success: true });
+    await beneficiary.destroy();
+    res.json({ success: true });
+  } catch (err) {
+    console.error("Error deleting beneficiary:", err);
+    res.status(500).json({ error: "Server error" });
+  }
 });
 
-// Get profile
+/* -------------------- PROFILE -------------------- */
+
+// Get client profile
 router.get("/profile", authMiddleware, async (req, res) => {
-  const client = await Client.findByPk(req.user.id);
-  res.json(client);
+  try {
+    const client = await Client.findByPk(req.user.id);
+    res.json(client);
+  } catch (err) {
+    console.error("Error fetching profile:", err);
+    res.status(500).json({ error: "Server error" });
+  }
 });
 
-// Update profile
+// Update client profile
 router.put("/profile", authMiddleware, async (req, res) => {
-  const client = await Client.findByPk(req.user.id);
-  if (!client) return res.status(404).json({ error: "Not found" });
+  try {
+    const client = await Client.findByPk(req.user.id);
+    if (!client) return res.status(404).json({ error: "Not found" });
 
-  client.name = req.body.name || client.name;
-  client.email = req.body.email || client.email;
-  await client.save();
-  res.json(client);
+    client.name = req.body.name || client.name;
+    client.surname = req.body.surname || client.surname;
+    client.email = req.body.email || client.email;
+    await client.save();
+
+    res.json(client);
+  } catch (err) {
+    console.error("Error updating profile:", err);
+    res.status(500).json({ error: "Server error" });
+  }
 });
 
 export default router;

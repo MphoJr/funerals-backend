@@ -40,6 +40,7 @@ app.use("/contacts", contactRoutes);
 app.use("/auth/client", clientAuthRoutes);
 app.use("/auth/admin", adminAuthRoutes);
 app.use("/", adminRoutes); // so /quotes, /claims, /contact, /clients work
+
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
 
