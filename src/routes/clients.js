@@ -2,7 +2,7 @@
 import express from "express";
 import authMiddleware from "../middleware/authMiddleware.js";
 import { Claims } from "../models/Claims.js";
-import { Member } from "../models/Members.js";
+import Member from "../models/Members.js";
 import Client from "../models/Client.js";
 
 const router = express.Router();
@@ -10,6 +10,25 @@ const router = express.Router();
 /* -------------------- CLAIMS -------------------- */
 
 // Get all claims for logged-in client
+
+router.post("/client/login", async (req, res) => {
+  const { email, password } = req.body;
+  console.log("Login attempt:", email, password); // 👀 check values
+
+  const client = await Client.findOne({ where: { email } });
+  if (!client) return res.status(401).json({ error: "Invalid credentials" });
+
+  const match = await bcrypt.compare(password, client.password);
+  if (!match) return res.status(401).json({ error: "Invalid credentials" });
+
+  const token = jwt.sign(
+    { id: client.id, role: "client" },
+    process.env.JWT_SECRET,
+    { expiresIn: "1h" },
+  );
+  res.json({ token });
+});
+
 router.get("/claims", authMiddleware, async (req, res) => {
   try {
     const claims = await Claims.findAll({ where: { clientId: req.user.id } });
@@ -23,12 +42,12 @@ router.get("/claims", authMiddleware, async (req, res) => {
 // Add new claim
 router.post("/claims", authMiddleware, async (req, res) => {
   try {
-    const claim = await Claims.create({
+    const claims = await Claims.create({
       description: req.body.description,
       status: "Pending",
       clientId: req.user.id,
     });
-    res.json(claim);
+    res.json(claims);
   } catch (err) {
     console.error("Error creating claim:", err);
     res.status(500).json({ error: "Server error" });
@@ -40,7 +59,7 @@ router.post("/claims", authMiddleware, async (req, res) => {
 // Get all beneficiaries for logged-in client
 router.get("/members", authMiddleware, async (req, res) => {
   try {
-    const beneficiaries = await Members.findAll({
+    const beneficiaries = await Member.findAll({
       where: { clientId: req.user.id },
     });
     res.json(beneficiaries);
@@ -53,7 +72,7 @@ router.get("/members", authMiddleware, async (req, res) => {
 // Add beneficiary (limit 13 per client)
 router.post("/members", authMiddleware, async (req, res) => {
   try {
-    const count = await Members.count({ where: { clientId: req.user.id } });
+    const count = await Member.count({ where: { clientId: req.user.id } });
     if (count >= 13) {
       return res.status(400).json({ error: "Max 13 beneficiaries allowed" });
     }
@@ -73,7 +92,7 @@ router.post("/members", authMiddleware, async (req, res) => {
 // Update beneficiary
 router.put("/members/:id", authMiddleware, async (req, res) => {
   try {
-    const beneficiary = await Members.findOne({
+    const beneficiary = await Member.findOne({
       where: { id: req.params.id, clientId: req.user.id },
     });
     if (!beneficiary) return res.status(404).json({ error: "Not found" });
@@ -92,7 +111,7 @@ router.put("/members/:id", authMiddleware, async (req, res) => {
 // Delete beneficiary
 router.delete("/members/:id", authMiddleware, async (req, res) => {
   try {
-    const beneficiary = await Members.findOne({
+    const beneficiary = await Member.findOne({
       where: { id: req.params.id, clientId: req.user.id },
     });
     if (!beneficiary) return res.status(404).json({ error: "Not found" });
