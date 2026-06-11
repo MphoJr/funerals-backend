@@ -31,6 +31,35 @@ router.get("/claims", authMiddleware, adminOnly, async (req, res) => {
   const claims = await Claims.findAll({ include: Client });
   res.json(claims);
 });
+// Approve claim
+router.put("/claims/:id/approve", authMiddleware, async (req, res) => {
+  try {
+    const claim = await Claim.findByPk(req.params.id);
+    if (!claim) return res.status(404).json({ error: "Claim not found" });
+
+    claim.status = "approved";
+    await claim.save();
+
+    res.json({ success: true, claim });
+  } catch (err) {
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+// Decline claim
+router.put("/claims/:id/decline", authMiddleware, async (req, res) => {
+  try {
+    const claim = await Claim.findByPk(req.params.id);
+    if (!claim) return res.status(404).json({ error: "Claim not found" });
+
+    claim.status = "declined";
+    await claim.save();
+
+    res.json({ success: true, claim });
+  } catch (err) {
+    res.status(500).json({ error: "Server error" });
+  }
+});
 
 // Contact messages
 router.get("/contact", authMiddleware, adminOnly, async (req, res) => {

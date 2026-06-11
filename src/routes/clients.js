@@ -42,14 +42,19 @@ router.get("/claims", authMiddleware, async (req, res) => {
 // Add new claim
 router.post("/claims", authMiddleware, async (req, res) => {
   try {
-    const claims = await Claims.create({
-      description: req.body.description,
-      status: "Pending",
+    const { deceasedName, deceasedIdNumber, dateOfClaim } = req.body;
+
+    const claim = await Claim.create({
+      deceasedName,
+      deceasedIdNumber,
+      dateOfClaim,
       clientId: req.user.id,
+      status: "pending", // 👈 always starts as pending
     });
-    res.json(claims);
+
+    res.json({ success: true, claim });
   } catch (err) {
-    console.error("Error creating claim:", err);
+    console.error("Error submitting claim:", err);
     res.status(500).json({ error: "Server error" });
   }
 });

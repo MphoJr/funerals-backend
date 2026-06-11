@@ -3,9 +3,15 @@ import { sequelize } from "../db.js";
 import Client from "./Client.js";
 
 export const Claims = sequelize.define("Claims", {
-  id: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
-  details: { type: DataTypes.TEXT, allowNull: false },
-  status: { type: DataTypes.STRING, defaultValue: "pending" },
+  claimId: { type: DataTypes.INTEGER, autoIncrement: true, primaryKey: true },
+  deceasedName: { type: DataTypes.STRING, allowNull: false },
+  deceasedIdNumber: { type: DataTypes.STRING, allowNull: false },
+  dateOfClaim: { type: DataTypes.DATEONLY, allowNull: false },
+  status: {
+    type: DataTypes.ENUM("pending", "approved", "declined"),
+    defaultValue: "pending",
+  },
+  clientId: { type: DataTypes.INTEGER, allowNull: false },
 });
 
 // Associations
