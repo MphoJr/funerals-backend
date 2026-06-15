@@ -75,38 +75,58 @@ router.get("/members", authMiddleware, async (req, res) => {
 });
 
 // Add beneficiary (limit 13 per client)
-router.post("/members", authMiddleware, async (req, res) => {
+router.post("/clients/members", authMiddleware, async (req, res) => {
   try {
-    const count = await Member.count({ where: { clientId: req.user.id } });
-    if (count >= 13) {
-      return res.status(400).json({ error: "Max 13 beneficiaries allowed" });
+    const { members } = req.body; // array of beneficiaries
+
+    if (!members || members.length === 0) {
+      return res
+        .status(400)
+        .json({ error: "At least one beneficiary required" });
+    }
+    if (members.length > 13) {
+      return res
+        .status(400)
+        .json({ error: "Maximum of 13 beneficiaries allowed" });
     }
 
-    const beneficiary = await Members.create({
-      name: req.body.name,
-      relation: req.body.relation,
-      clientId: req.user.id,
-    });
-    res.json(beneficiary);
+    const saved = await Promise.all(
+      members.map((m) =>
+        Member.create({
+          name: m.name,
+          surname: m.surname,
+          relation: m.relation,
+          idNumber: m.idNumber,
+          clientId: req.user.id,
+        }),
+      ),
+    );
+
+    res.json({ success: true, members: saved });
   } catch (err) {
-    console.error("Error creating beneficiary:", err);
+    console.error("Error adding beneficiaries:", err);
     res.status(500).json({ error: "Server error" });
   }
 });
 
 // Update beneficiary
-router.put("/members/:id", authMiddleware, async (req, res) => {
+// Update beneficiary
+router.put("/clients/members/:id", authMiddleware, async (req, res) => {
   try {
-    const beneficiary = await Member.findOne({
+    const { name, surname, relation, idNumber } = req.body;
+    const member = await Member.findOne({
       where: { id: req.params.id, clientId: req.user.id },
     });
-    if (!beneficiary) return res.status(404).json({ error: "Not found" });
+    if (!member)
+      return res.status(404).json({ error: "Beneficiary not found" });
 
-    beneficiary.name = req.body.name || beneficiary.name;
-    beneficiary.relation = req.body.relation || beneficiary.relation;
-    await beneficiary.save();
+    member.name = name;
+    member.surname = surname;
+    member.relation = relation;
+    member.idNumber = idNumber;
+    await member.save();
 
-    res.json(beneficiary);
+    res.json({ success: true, member });
   } catch (err) {
     console.error("Error updating beneficiary:", err);
     res.status(500).json({ error: "Server error" });

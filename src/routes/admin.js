@@ -62,6 +62,7 @@ router.put("/claims/:id/decline", authMiddleware, async (req, res) => {
 });
 
 // Contact messages
+
 router.get("/contact", authMiddleware, adminOnly, async (req, res) => {
   const messages = await Contact.findAll();
   res.json(messages);
